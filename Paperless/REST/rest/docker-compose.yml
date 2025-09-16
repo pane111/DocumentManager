@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: dm_server
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: dm_db
+      POSTGRES_USER: dm_admin    # default admin user
+      POSTGRES_PASSWORD: dm_admin_pass    # default admin password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+
+volumes:
+  postgres_data:
