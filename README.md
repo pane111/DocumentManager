@@ -7,3 +7,4 @@ Usage:
 - change directory to server: cd Paperless/REST/rest
 - build docker container: docker-compose up -d
 - send requests via postman: http://localhost:8080/api/docs
+- close docker container:  docker-compose down -v
