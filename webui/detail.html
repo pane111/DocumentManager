@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Details</title>
+    <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<div class="d-page">
+    <button id="returnbtn"> < Go Back</button>
+<h2 id="doc_title" class="title-field"></h2>
+<div class="details">
+
+    <div class="scrollable">
+        <h3>Contents</h3>
+        <p id="doc_content" class="field"></p>
+    </div>
+    <div class="static">
+        <h3>Gemini AI Summary</h3>
+        <p id="ai_summary" class="field">insert gemini summary here</p>
+    </div>
+</div>
+</div>
+<script>
+    async function loadDetail() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const loremipsum =
+                "\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam dapibus viverra consequat. Cras tincidunt blandit convallis. Quisque eget dui quis eros viverra euismod et mattis leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean quis lacus eros. Praesent velit mi, tincidunt et tincidunt a, laoreet vel enim. Morbi augue urna, suscipit quis ex nec, fringilla tincidunt libero. Maecenas magna magna, tristique sit amet nisi ac, porttitor hendrerit nulla.\n" +
+            "Nunc scelerisque rutrum justo ac tempus. Etiam quis orci auctor, gravida neque at, pellentesque massa. Vivamus at commodo velit. Nulla eros metus, facilisis ac rutrum vitae, ultricies porta velit. Proin pellentesque justo purus. Maecenas at aliquet turpis, ac fringilla risus. Ut aliquet magna eu lectus rutrum, ullamcorper dapibus ipsum pharetra. Fusce malesuada ante quis consequat suscipit. Nullam scelerisque tincidunt sem, quis luctus libero pretium eu. Praesent eget diam ac dolor hendrerit lobortis. Etiam lacinia sapien nec interdum pretium. Donec justo mi, aliquam in dolor tristique, scelerisque imperdiet velit. Vivamus ac maximus magna. "
+        ;
+        if (!id) {
+            document.getElementById('title').textContent = 'No ID provided';
+            return;
+        }
+        document.getElementById('returnbtn').addEventListener('click',  () => {
+            window.location.href = `index.html`;
+        })
+        try {
+            const r = await fetch(`/api/docs/${id}`);
+            if (!r.ok) {
+                document.getElementById('doc_title').textContent = `HTTP ${r.status}`;
+                return;
+            }
+            const item = await r.json();
+            document.getElementById('doc_title').textContent = `${item.id}: ${item.title}`;
+
+            var docstring = item.content + loremipsum //only for testing
+            document.getElementById('doc_content').innerHTML = docstring.replace(/\n/g, "<br><br>")
+
+
+            //do gemini api call to set the summary
+            document.getElementById('ai_summary').textContent = "Summary by Gemini AI goes here"
+                ;
+
+        } catch (e) {
+            document.getElementById('doc_title').textContent = `Error: ${e}`;
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDetail);
+</script>
+
+</body>
+</html>
