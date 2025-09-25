@@ -13,5 +13,20 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
+  # --- New: Web UI (Nginx) ---
+  web:
+    image: nginx:alpine
+    container_name: dm_web
+    restart: always
+    ports:
+      - "80:80"   # GET http://localhost/ -> frontend
+    volumes:
+      # Nginx config with API proxy
+      - ./webui/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Static frontend files
+      - ./webui/index.html:/usr/share/nginx/html/index.html:ro
+      - ./webui/app.js:/usr/share/nginx/html/app.js:ro
+      - ./webui/styles.css:/usr/share/nginx/html/styles.css:ro
+
 volumes:
   postgres_data:
