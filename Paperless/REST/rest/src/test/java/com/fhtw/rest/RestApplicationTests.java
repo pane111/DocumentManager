@@ -39,7 +39,7 @@ class RestApplicationTests {
     @Test
     void testDtoConversion()
     {
-        DocumentDto dto = new DocumentDto(1L,"Dto2Doc","Lorem");
+        DocumentDto dto = new DocumentDto(1L,"Dto2Doc","Lorem","processed");
         System.out.println(dto);
         System.out.println("Converting dto to model");
         Document doc = DocumentMapper.dtoToDoc(dto);

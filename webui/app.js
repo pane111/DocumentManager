@@ -20,11 +20,20 @@ async function loadItems() {
     (Array.isArray(data) ? data : []).forEach(item => {
       const li = document.createElement('li');
       li.textContent = `${item.id}: ${item.title} — ${item.content}`;
-      li.style.cursor = 'pointer'
-      li.classList.add('doc-list');
-      li.addEventListener('click', () => {
-        window.location.href = `detail.html?id=${encodeURIComponent(item.id)}`;
-      })
+
+
+      if (item.status !== "processing") {
+        li.style.cursor = 'pointer'
+        li.classList.add('doc-list');
+        li.addEventListener('click', () => {
+          window.location.href = `detail.html?id=${encodeURIComponent(item.id)}`;
+        })
+      }
+      else {
+        li.textContent += ' - PROCESSING';
+        li.classList.add('doc-unproc');
+      }
+
 
       ul.appendChild(li);
     });

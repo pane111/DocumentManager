@@ -7,7 +7,7 @@ public class DocumentMapper {
 
     public static DocumentDto docToDto(Document doc) {
         if (doc != null) {
-            return new DocumentDto(doc.getId(), doc.getTitle(), doc.getContent());
+            return new DocumentDto(doc.getId(), doc.getTitle(), doc.getContent(), doc.getStatus());
         }
         return null;
     }

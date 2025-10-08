@@ -7,7 +7,7 @@ public class DocumentDto {
     private Long id;
     private String title;
     private String content;
-
+    private String status;
 
     //These getters and setters are required due to a bug with lombok
     public DocumentDto() {
@@ -15,10 +15,11 @@ public class DocumentDto {
     }
 
 
-    public DocumentDto(Long id, String title, String content) {
+    public DocumentDto(Long id, String title, String content, String status) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.status = status;
     }
 
     public Long getId() {
