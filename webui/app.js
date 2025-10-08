@@ -1,4 +1,5 @@
 async function loadHealth() {
+  print("Loading items")
   const el = document.getElementById('health');
   try {
     const r = await fetch('/api/docs');
@@ -33,6 +34,10 @@ async function loadItems() {
 }
 
 
+document.getElementById('upload').addEventListener('click', () => {
+  print("Clicked the upload button, should redirect now")
+  window.location.href='upload.html'
+})
 
 document.getElementById('reload').addEventListener('click', loadItems);
 

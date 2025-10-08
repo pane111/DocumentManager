@@ -13,6 +13,16 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: dm_queue
+    restart: always
+    ports:
+      - "5672:5672"    # RabbitMQ main port
+      - "15672:15672"  # RabbitMQ management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: dm_user
+      RABBITMQ_DEFAULT_PASS: dm_pass
 
   spring:
     build: ./Paperless/REST/rest
