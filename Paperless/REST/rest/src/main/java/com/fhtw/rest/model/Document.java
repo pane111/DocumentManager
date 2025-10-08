@@ -14,6 +14,8 @@ public class Document {
     @Column(length = 2000)
     private String content;
 
+    private String status="processing";
+
     //These getters and setters are required due to a bug with lombok
     public Document() {
 
@@ -47,6 +49,13 @@ public class Document {
     }
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

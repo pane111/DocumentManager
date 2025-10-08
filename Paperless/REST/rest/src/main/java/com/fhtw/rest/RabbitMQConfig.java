@@ -11,10 +11,15 @@ public class RabbitMQConfig {
     public static final String EXCHANGE = "documentExchange";
     public static final String QUEUE = "ocrQueue";
     public static final String ROUTING_KEY = "document.uploaded";
+    public static final String CONFIRM_QUEUE = "confirmQueue";
 
     @Bean
     public Queue queue() {
         return QueueBuilder.durable(QUEUE).build();
+    }
+    @Bean
+    public Queue confirmQueue() {
+        return QueueBuilder.durable(CONFIRM_QUEUE).build();
     }
 
     @Bean

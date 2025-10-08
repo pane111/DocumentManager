@@ -3,13 +3,14 @@ CREATE SCHEMA IF NOT EXISTS dm_schema;
 CREATE TABLE IF NOT EXISTS dm_schema.documents (
                                 id BIGSERIAL PRIMARY KEY,
                                 title TEXT,
-                                content TEXT
+                                content TEXT,
+                                status TEXT
 );
 
-INSERT INTO dm_schema.documents (title, content) VALUES
-('Project Proposal', 'This document outlines the proposal for the new project, including objectives, scope, and timeline.'),
-('Meeting Notes', 'Notes from the weekly team meeting, covering key discussion points and action items.'),
-('Research Paper', 'A research paper discussing recent developments in AI and machine learning technologies.');
+INSERT INTO dm_schema.documents (title, content, status) VALUES
+('Project Proposal', 'This document outlines the proposal for the new project, including objectives, scope, and timeline.','processed'),
+('Meeting Notes', 'Notes from the weekly team meeting, covering key discussion points and action items.','processed'),
+('Research Paper', 'A research paper discussing recent developments in AI and machine learning technologies.','processed');
 
 
 
