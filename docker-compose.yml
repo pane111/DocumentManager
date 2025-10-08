@@ -27,5 +27,17 @@ services:
       - ./webui/app.js:/usr/share/nginx/html/app.js:ro
       - ./webui/styles.css:/usr/share/nginx/html/styles.css:ro
 
+  spring:
+    build: ./Paperless/REST/rest
+    container_name: dm_api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dm_db
+      SPRING_DATASOURCE_USERNAME: dm_admin
+      SPRING_DATASOURCE_PASSWORD: dm_admin_pass
+    depends_on:
+      - postgres
 volumes:
   postgres_data:
