@@ -34,9 +34,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dm_db
       SPRING_DATASOURCE_USERNAME: dm_admin
       SPRING_DATASOURCE_PASSWORD: dm_admin_pass
+      SPRING_RABBITMQ_HOST: dm_queue
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: dm_user
+      SPRING_RABBITMQ_PASSWORD: dm_pass
     depends_on:
       - postgres
-
+      - rabbitmq
 
   web:
     build: ./webui
