@@ -26,10 +26,6 @@
     async function loadDetail() {
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
-        const loremipsum =
-                "\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam dapibus viverra consequat. Cras tincidunt blandit convallis. Quisque eget dui quis eros viverra euismod et mattis leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean quis lacus eros. Praesent velit mi, tincidunt et tincidunt a, laoreet vel enim. Morbi augue urna, suscipit quis ex nec, fringilla tincidunt libero. Maecenas magna magna, tristique sit amet nisi ac, porttitor hendrerit nulla.\n" +
-            "Nunc scelerisque rutrum justo ac tempus. Etiam quis orci auctor, gravida neque at, pellentesque massa. Vivamus at commodo velit. Nulla eros metus, facilisis ac rutrum vitae, ultricies porta velit. Proin pellentesque justo purus. Maecenas at aliquet turpis, ac fringilla risus. Ut aliquet magna eu lectus rutrum, ullamcorper dapibus ipsum pharetra. Fusce malesuada ante quis consequat suscipit. Nullam scelerisque tincidunt sem, quis luctus libero pretium eu. Praesent eget diam ac dolor hendrerit lobortis. Etiam lacinia sapien nec interdum pretium. Donec justo mi, aliquam in dolor tristique, scelerisque imperdiet velit. Vivamus ac maximus magna. "
-        ;
         if (!id) {
             document.getElementById('title').textContent = 'No ID provided';
             return;
@@ -46,7 +42,7 @@
             const item = await r.json();
             document.getElementById('doc_title').textContent = `${item.id}: ${item.title}`;
 
-            var docstring = item.content + loremipsum //only for testing
+            var docstring = item.content;
             document.getElementById('doc_content').innerHTML = docstring.replace(/\n/g, "<br><br>")
 
 

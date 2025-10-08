@@ -1,6 +1,14 @@
-body { font-family: system-ui, sans-serif; margin: 2rem; }
+body { font-family: system-ui, sans-serif; margin: 2rem; background-color: lightgray; }
 pre { background: #f6f6f6; padding: .75rem; border-radius: .5rem; }
-button { padding: .4rem .8rem; }
+button { padding: .4rem .8rem; color: blue; }
+
+
+.pg {
+    background-color: white;
+    width:70%;
+    text-align: center;
+    margin: 0 auto;
+}
 .scrollable {
 
     max-width:25%;

@@ -3,21 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload</title>
+    <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
+<div class="pg">
+<button id="returnbtn"> < Go Back</button>
 <h1>Upload Document</h1>
 <br>
-<form>
-    <label for="mytitle">Document Title</label>
-  <input type="text" id="mytitle">
+<form id="userdoc">
+  <input name="title" type="text" id="mytitle" value="Document Title" required>
     <br>
-    <label for="mydoc">File</label>
-    <div id="drop" class="drop" tabindex="0" aria-label="Drop file here or click to select">
-        <div id="drop-text"><strong>Click or drop a file here</strong></div>
-        <input id="mydoc" type="file" accept="application/pdf"  />
-    </div>
+        <input name="content" id="mydoc" type="text" value="Document Content"  required />
     <br>
   <input type="submit" content="Upload">
+    <p id="output"></p>
 </form>
+</div>
+<script>
+
+
+    document.getElementById('returnbtn').addEventListener('click', ()=>{
+        window.location.href='index.html'
+    })
+    async function sendDoc() {
+
+        const data = {
+            title: document.getElementById("mytitle").value,
+            content: document.getElementById("mydoc").value
+        }
+
+
+        try {
+            const response = await fetch('/api/docs', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            document.getElementById("output").textContent="Sent successfully.";
+        }
+        catch (e) {
+            console.error(e)
+            document.getElementById("output").textContent="There was an error.\nPlease ensure all data is correct."
+        }
+
+    }
+    document.getElementById("userdoc").addEventListener("submit", (event) => {
+        event.preventDefault();
+        sendDoc();
+    });
+
+</script>
 </body>
 </html>
