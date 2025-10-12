@@ -1,4 +1,5 @@
 # DocumentManager
+SWEN3 FH Technikum Project
 A java app with a web interface that manages documents
 
 Created by Paul Neuhold & Laurin Sonner
