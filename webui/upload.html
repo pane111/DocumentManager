@@ -10,10 +10,10 @@
 <button id="returnbtn"> < Go Back</button>
 <h1>Upload Document</h1>
 <br>
-<form id="userdoc">
+<form id="userdoc" action="http://localhost:8080/api/docs" method="post" enctype="multipart/form-data">
   <input name="title" type="text" id="mytitle" value="Document Title" required>
     <br>
-        <input name="content" id="mydoc" type="text" value="Document Content"  required />
+    <input type="file" name="file" id="myfile" accept="application/pdf" required />
     <br>
   <input type="submit" content="Upload">
     <p id="output"></p>
@@ -25,32 +25,34 @@
     document.getElementById('returnbtn').addEventListener('click', ()=>{
         window.location.href='index.html'
     })
-    async function sendDoc() {
 
-        const data = {
-            title: document.getElementById("mytitle").value,
-            content: document.getElementById("mydoc").value
-        }
-
-
-        try {
-            const response = await fetch('/api/docs', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
-            document.getElementById("output").textContent="Sent successfully.";
-        }
-        catch (e) {
-            console.error(e)
-            document.getElementById("output").textContent="There was an error.\nPlease ensure all data is correct."
-        }
-
-    }
     document.getElementById("userdoc").addEventListener("submit", (event) => {
         event.preventDefault();
         sendDoc();
     });
+
+    async function sendDoc() {
+        const form = document.getElementById("userdoc");
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('http://localhost:8080/api/docs', {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                document.getElementById("output").textContent = "Sent successfully.";
+            } else {
+                const text = await response.text();
+                document.getElementById("output").textContent = "Error: " + text;
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById("output").textContent =
+                "There was an error. Please ensure all data is correct.";
+        }
+    }
 
 </script>
 </body>

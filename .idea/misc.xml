@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/Paperless/REST/rest/pom.xml" />
+        <option value="$PROJECT_DIR$/Paperless/Services/OcrService/pom.xml" />
       </list>
     </option>
   </component>

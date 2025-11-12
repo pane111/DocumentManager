@@ -24,6 +24,15 @@ services:
       RABBITMQ_DEFAULT_USER: dm_user
       RABBITMQ_DEFAULT_PASS: dm_pass
 
+  minio:
+    image: minio/minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data
+    ports:
+      - "9000:9000"
+
   spring:
     build: ./Paperless/REST/rest
     container_name: dm_api
@@ -38,9 +47,29 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: dm_user
       SPRING_RABBITMQ_PASSWORD: dm_pass
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
     depends_on:
       - postgres
       - rabbitmq
+      - minio
+  ocr:
+    build: ./Paperless/Services/OcrService
+    container_name: dm_ocr
+    restart: always
+    environment:
+      SPRING_RABBITMQ_HOST: dm_queue
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: dm_user
+      SPRING_RABBITMQ_PASSWORD: dm_pass
+
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+
+    depends_on:
+    - rabbitmq
 
   web:
     build: ./webui

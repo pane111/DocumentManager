@@ -6,12 +6,16 @@ import com.fhtw.rest.dto.DocumentDto;
 import com.fhtw.rest.mapper.DocumentMapper;
 import com.fhtw.rest.model.Document;
 import com.fhtw.rest.repository.DocumentRepo;
+import io.minio.*;
 import lombok.extern.java.Log;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -43,7 +47,34 @@ public class DocumentService {
         return DocumentMapper.docToDto(saved);
     }
 
+    public void uploadFile(MultipartFile file) throws Exception {
+        log.info("Uploading file to MinIO");
 
+
+
+        MinioClient minioClient = MinioClient.builder()
+                .endpoint(System.getenv("MINIO_ENDPOINT"))
+                .credentials(System.getenv("MINIO_ACCESS_KEY"), System.getenv("MINIO_SECRET_KEY"))
+                .build();
+
+        boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket("documents").build());
+        if (!found) {
+            log.warning("Bucket does not exist. Creating bucket ");
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket("documents").build());
+        }
+
+
+        minioClient.putObject(
+                PutObjectArgs.builder()
+                        .bucket("documents")
+                        .object(file.getOriginalFilename())
+                        .stream(file.getInputStream(), file.getSize(), -1)
+                        .contentType(file.getContentType())
+                        .build()
+        );
+        log.info("Upload finished!");
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, Objects.requireNonNull(file.getOriginalFilename()));
+    }
 
     public List<DocumentDto> findAll() {
         List<DocumentDto> dtos = repo.findAll().stream().map(DocumentMapper::docToDto).toList();
