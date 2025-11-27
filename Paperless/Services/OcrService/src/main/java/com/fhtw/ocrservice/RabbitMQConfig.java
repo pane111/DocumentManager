@@ -10,6 +10,7 @@ public class RabbitMQConfig {
     public static final String QUEUE = "ocrQueue";
     public static final String ROUTING_KEY = "document.uploaded";
     public static final String CONFIRM_QUEUE = "confirmQueue";
+    public static final String GEMINI_QUEUE = "geminiQueue";
 
     @Bean
     public Queue queue() {
@@ -19,6 +20,8 @@ public class RabbitMQConfig {
     public Queue confirmQueue() {
         return QueueBuilder.durable(CONFIRM_QUEUE).build();
     }
+    @Bean
+    public Queue geminiQueue() {return QueueBuilder.durable(GEMINI_QUEUE).build();}
 
     @Bean
     public TopicExchange exchange() {

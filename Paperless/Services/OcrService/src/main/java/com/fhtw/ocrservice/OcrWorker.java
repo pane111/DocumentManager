@@ -54,6 +54,8 @@ public class OcrWorker {
             tesseract.setLanguage("eng");
             String result = tesseract.doOCR(tempFile);
             log.info("Tesseract result: " + result);
+            log.info("Sending document content to Gemini Worker...");
+            rabbitTemplate.convertAndSend(RabbitMQConfig.GEMINI_QUEUE, result);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
