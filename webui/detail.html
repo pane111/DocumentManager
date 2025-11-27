@@ -42,12 +42,12 @@
             const item = await r.json();
             document.getElementById('doc_title').textContent = `${item.id}: ${item.title}`;
 
+            //set AI summary
             var docstring = item.content;
-            document.getElementById('doc_content').innerHTML = docstring.replace(/\n/g, "<br><br>")
+            document.getElementById('ai_summary').innerHTML = docstring.replace(/\n/g, "<br><br>")
 
 
-            //do gemini api call to set the summary
-            document.getElementById('ai_summary').textContent = "Summary by Gemini AI goes here"
+            document.getElementById('doc_content').textContent = "Document content from MinIO goes here"
                 ;
 
         } catch (e) {

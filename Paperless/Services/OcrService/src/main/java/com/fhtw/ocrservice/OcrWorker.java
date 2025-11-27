@@ -57,7 +57,7 @@ public class OcrWorker {
             String result = tesseract.doOCR(tempFile);
             log.info("Tesseract result: " + result);
             log.info("Sending document content to Gemini Worker...");
-            MessageContainer mc = new MessageContainer(msg, result);
+            MessageContainer mc = new MessageContainer(messageContainer.getFilepath(), result);
             mc.setId(messageContainer.getId());
 
             rabbitTemplate.convertAndSend(RabbitMQConfig.GEMINI_QUEUE, new ObjectMapper().writeValueAsString(mc));

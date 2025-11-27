@@ -19,7 +19,7 @@ async function loadItems() {
     ul.innerHTML = '';
     (Array.isArray(data) ? data : []).forEach(item => {
       const li = document.createElement('li');
-      li.textContent = `${item.id}: ${item.title} — ${item.content}`;
+      li.textContent = `${item.id}: ${item.title}`;
 
 
       if (item.status !== "processing") {
