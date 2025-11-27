@@ -48,11 +48,13 @@ public class DocumentController {
     }
     */
     @PostMapping
-    public ResponseEntity<String> uploadPdf(@RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<String> uploadPdf(@RequestParam("title") String title, @RequestParam("file") MultipartFile file) throws Exception {
         if (!file.getOriginalFilename().endsWith(".pdf")) {
             return ResponseEntity.badRequest().body("Only .pdf files are supported");
         }
-        service.uploadFile(file);
+        DocumentDto temp = new DocumentDto();
+        temp.setTitle(title);
+        service.uploadFile(temp,file);
         return ResponseEntity.ok("Sent file " + file.getOriginalFilename());
     }
 

@@ -3,6 +3,7 @@ package com.fhtw.rest.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fhtw.rest.RabbitMQConfig;
 import com.fhtw.rest.dto.DocumentDto;
+import com.fhtw.rest.dto.MessageContainer;
 import com.fhtw.rest.mapper.DocumentMapper;
 import com.fhtw.rest.model.Document;
 import com.fhtw.rest.repository.DocumentRepo;
@@ -33,23 +34,23 @@ public class DocumentService {
     public DocumentDto create(DocumentDto dto) {
         Document d = DocumentMapper.dtoToDoc(dto);
         Document saved = repo.save(d);
-        ObjectMapper mapper = new ObjectMapper();
 
+        /*
+        ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(saved);
-            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, json);
+            //rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, json);
             log.info("Sent document to RabbitMQ");
         }
         catch (Exception e) {
             log.warning(e.getMessage());
         }
-
+        */
         return DocumentMapper.docToDto(saved);
     }
 
-    public void uploadFile(MultipartFile file) throws Exception {
+    public void uploadFile(DocumentDto dto,MultipartFile file) throws Exception {
         log.info("Uploading file to MinIO");
-
 
 
         MinioClient minioClient = MinioClient.builder()
@@ -73,7 +74,15 @@ public class DocumentService {
                         .build()
         );
         log.info("Upload finished!");
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, Objects.requireNonNull(file.getOriginalFilename()));
+
+        log.info("Creating document on database");
+        DocumentDto temp = create(dto);
+        log.info("Temp ID: " + temp.getId());
+        MessageContainer mcontainer = new MessageContainer();
+        mcontainer.setId(temp.getId());
+        mcontainer.setFilepath(file.getOriginalFilename());
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, new ObjectMapper().writeValueAsString(mcontainer));
     }
 
     public List<DocumentDto> findAll() {
@@ -98,11 +107,25 @@ public class DocumentService {
     }
 
     @RabbitListener(queues = RabbitMQConfig.CONFIRM_QUEUE)
-    public void updateStatus(String id) {
-        log.info("Updating document status of "+id);
-        Document doc = repo.findById(Long.parseLong(id)).get();
-        doc.setStatus("processed");
-        repo.save(doc);
+    public void updateStatus(String msg) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            MessageContainer mcontainer = mapper.readValue(msg, MessageContainer.class);
+
+            Long id = mcontainer.getId();
+            String path = mcontainer.getFilepath();
+            String summary = mcontainer.getMessage();
+            log.info("Updating document status of "+id);
+            Document doc = repo.findById(id).get();
+            doc.setStatus("processed");
+            doc.setPath(path);
+            doc.setContent(summary);
+            repo.save(doc);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void delete(Long id) {

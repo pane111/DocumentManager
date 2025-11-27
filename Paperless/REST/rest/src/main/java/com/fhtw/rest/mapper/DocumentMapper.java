@@ -14,7 +14,7 @@ public class DocumentMapper {
 
     public static Document dtoToDoc(DocumentDto dto) {
         if (dto!=null) {
-            return new Document(dto.getId(), dto.getTitle(), dto.getContent());
+            return new Document(dto.getId(), dto.getTitle(), dto.getContent(),dto.getPath());
         }
         return null;
     }

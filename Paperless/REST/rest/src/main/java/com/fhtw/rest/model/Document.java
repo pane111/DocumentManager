@@ -14,6 +14,8 @@ public class Document {
     @Column(length = 2000)
     private String content;
 
+    private String path;
+
     private String status="processing";
 
     //These getters and setters are required due to a bug with lombok
@@ -25,6 +27,12 @@ public class Document {
         this.id = id;
         this.title = title;
         this.content = content;
+    }
+    public Document(Long id, String title, String content, String path) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.path = path;
     }
 
     // Getter & Setter for id
@@ -56,6 +64,13 @@ public class Document {
     }
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPath() {
+        return path;
+    }
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

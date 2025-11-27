@@ -2,6 +2,7 @@ package com.fhtw.ocrservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fhtw.ocrservice.model.Document;
+import com.fhtw.ocrservice.model.MessageContainer;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,8 @@ public class OcrWorker {
     @RabbitListener(queues = RabbitMQConfig.QUEUE)
     public void confirm(String msg) throws Exception {
         log.info("OCR Worker received: " +msg +  " thread: " + Thread.currentThread().getName());
-
+        ObjectMapper mapper = new ObjectMapper();
+        MessageContainer messageContainer = mapper.readValue(msg, MessageContainer.class);
         //Process the received data, eg by generating summary
         MinioClient client = MinioClient.builder()
                 .endpoint(System.getenv("MINIO_ENDPOINT"))
@@ -39,7 +41,7 @@ public class OcrWorker {
         InputStream is = client.getObject(
                 GetObjectArgs.builder()
                         .bucket("documents")
-                        .object(msg)
+                        .object(messageContainer.getFilepath())
                         .build()
         );
         if (is != null) {
@@ -55,7 +57,10 @@ public class OcrWorker {
             String result = tesseract.doOCR(tempFile);
             log.info("Tesseract result: " + result);
             log.info("Sending document content to Gemini Worker...");
-            rabbitTemplate.convertAndSend(RabbitMQConfig.GEMINI_QUEUE, result);
+            MessageContainer mc = new MessageContainer(msg, result);
+            mc.setId(messageContainer.getId());
+
+            rabbitTemplate.convertAndSend(RabbitMQConfig.GEMINI_QUEUE, new ObjectMapper().writeValueAsString(mc));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -63,26 +68,7 @@ public class OcrWorker {
         }
 
 
-
-
-        /*
-        String confirmation = "Processing complete for thread: " + Thread.currentThread().getName() + ", message: " + msg;
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            Document document = objectMapper.readValue(msg, Document.class);
-            rabbitTemplate.convertAndSend(RabbitMQConfig.CONFIRM_QUEUE, document.getId().toString());
-            log.info("DONE!");
-
-        }
-        catch (Exception e) {
-            log.warning("Could not decode document from JSON: " + msg);
-            log.severe(e.getMessage());
-
-        }
-
-        */
-
-
     }
+
 
 }

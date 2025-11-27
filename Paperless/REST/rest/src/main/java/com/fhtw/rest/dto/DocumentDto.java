@@ -8,6 +8,7 @@ public class DocumentDto {
     private String title;
     private String content;
     private String status;
+    private String path;
 
     //These getters and setters are required due to a bug with lombok
     public DocumentDto() {
@@ -20,6 +21,14 @@ public class DocumentDto {
         this.title = title;
         this.content = content;
         this.status = status;
+        this.path = "/";
+    }
+    public DocumentDto(Long id, String title, String content, String status, String path) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.status = status;
+        this.path = path;
     }
 
     public Long getId() {
@@ -43,5 +52,12 @@ public class DocumentDto {
     }
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getPath() {
+        return path;
+    }
+    public void setPath(String path) {
+        this.path = path;
     }
 }

@@ -1,6 +1,9 @@
 package com.fhtw.ocrservice;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fhtw.ocrservice.model.MessageContainer;
 import lombok.extern.java.Log;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,8 +26,12 @@ public class GeminiWorker {
     }
 
     @RabbitListener(queues = RabbitMQConfig.GEMINI_QUEUE)
-    public void summarize(String ocrText) throws Exception {
+    public void summarize(String messageCont) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        MessageContainer mc = mapper.readValue(messageCont, MessageContainer.class);
+        String ocrText = mc.getMessage();
         log.info("Gemini API Key: " + apiKey);
+        log.info("File received: " +mc.getFilepath() +", Document ID: " + mc.getId());
         log.info("Creating request...");
 
         String prompt = """
@@ -32,16 +39,19 @@ public class GeminiWorker {
                 
                 """+ocrText;
 
-        String response = geminiResponse(prompt);
+        String response = geminiResponse(mc.getFilepath(),prompt);
         if (response == null)
         {
             log.warning("Response from Gemini was NULL!");
             return;
         }
         log.info("Worker received final string:" + response);
+        MessageContainer finalResponse = new MessageContainer(mc.getFilepath(),response);
+        finalResponse.setId(mc.getId());
+        rabbitTemplate.convertAndSend(RabbitMQConfig.CONFIRM_QUEUE, new ObjectMapper().writeValueAsString(finalResponse));
     }
 
-    private String geminiResponse(String prompt) throws Exception {
+    private String geminiResponse(String path,String prompt) throws Exception {
         String jsonBody = """
                 {
                   "contents": [
@@ -65,7 +75,19 @@ public class GeminiWorker {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             log.info("Status code: " + response.statusCode());
             log.info(response.body());
-            return response.body();
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.body());
+            String summary = root
+                    .path("candidates")
+                    .get(0)
+                    .path("content")
+                    .path("parts")
+                    .get(0)
+                    .path("text")
+                    .asText();
+
+            return summary;
 
         }
         catch (Exception e) {
