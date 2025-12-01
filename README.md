@@ -2,9 +2,11 @@
 SWEN3 FH Technikum Project
 A java app with a web interface that manages documents
 
-Created by Paul Neuhold & Laurin Sonner
+Features:
+- PDF document upload and storage through MinIO
+- Automatic summary generation with Gemini AI
+- Viewing document contents through web UI
 
-Usage:
-- start: docker compose up --build
-- close by pressing CTRL C
-- remove with: docker compose down
+Created by Paul Jakob Neuhold & Laurin Sonner
+
+
