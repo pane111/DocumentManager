@@ -43,6 +43,9 @@ public class GeminiWorker {
         if (response == null)
         {
             log.warning("Response from Gemini was NULL!");
+            MessageContainer finalResponse = new MessageContainer(mc.getFilepath(),"Gemini failed to generate a summary.");
+            finalResponse.setId(mc.getId());
+            rabbitTemplate.convertAndSend(RabbitMQConfig.CONFIRM_QUEUE, new ObjectMapper().writeValueAsString(finalResponse));
             return;
         }
         log.info("Worker received final string:" + response);
@@ -66,7 +69,7 @@ public class GeminiWorker {
         log.info("Calling gemini: " + jsonBody);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"))
+                .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"))
                 .header("Content-Type","application/json")
                 .header("X-goog-api-key",apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))

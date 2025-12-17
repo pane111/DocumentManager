@@ -32,7 +32,6 @@ public class OcrWorker {
         log.info("OCR Worker received: " +msg +  " thread: " + Thread.currentThread().getName());
         ObjectMapper mapper = new ObjectMapper();
         MessageContainer messageContainer = mapper.readValue(msg, MessageContainer.class);
-        //Process the received data, eg by generating summary
         MinioClient client = MinioClient.builder()
                 .endpoint(System.getenv("MINIO_ENDPOINT"))
                 .credentials(System.getenv("MINIO_ACCESS_KEY"), System.getenv("MINIO_SECRET_KEY"))

@@ -11,11 +11,6 @@
     <button id="returnbtn"> < Go Back</button>
 <h2 id="doc_title" class="title-field"></h2>
 <div class="details">
-
-    <div class="scrollable">
-        <h3>Contents</h3>
-        <p id="doc_content" class="field"></p>
-    </div>
     <div class="static">
         <h3>Gemini AI Summary</h3>
         <p id="ai_summary" class="field">insert gemini summary here</p>
@@ -46,9 +41,6 @@
             var docstring = item.content;
             document.getElementById('ai_summary').innerHTML = docstring.replace(/\n/g, "<br><br>")
 
-
-            document.getElementById('doc_content').textContent = "Document content from MinIO goes here"
-                ;
 
         } catch (e) {
             document.getElementById('doc_title').textContent = `Error: ${e}`;
