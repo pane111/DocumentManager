@@ -15,7 +15,16 @@
         <h3>Gemini AI Summary</h3>
         <p id="ai_summary" class="field">insert gemini summary here</p>
     </div>
+
 </div>
+    <br>
+    <div id="comment_section">
+        <h3>Comments</h3>
+        <div class="listcont">
+            <ul id="comlist">PLACEHOLDER TEXT</ul>
+        </div>
+
+    </div>
 </div>
 <script>
     async function loadDetail() {
@@ -40,10 +49,36 @@
             //set AI summary
             var docstring = item.content;
             document.getElementById('ai_summary').innerHTML = docstring.replace(/\n/g, "<br><br>")
+            document.getElementById('comlist').innerHTML = "Nothing posted yet."
 
+            loadComments(id);
 
         } catch (e) {
             document.getElementById('doc_title').textContent = `Error: ${e}`;
+        }
+    }
+
+    async function loadComments(id)
+    {
+        try {
+            const ul = document.getElementById('comlist');
+            const r = await fetch(`/api/comments/${id}`);
+
+            if (!r.ok) {
+                return;
+            }
+            const data = await r.json();
+            ul.innerHTML = '';
+            (Array.isArray(data) ? data : []).forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.author} posted:\n${item.content}`;
+
+                ul.appendChild(li);
+            });
+        }
+        catch (e)
+        {
+            ocument.getElementById('comlist').innerHTML = 'An error occured while loading comments.';
         }
     }
 
