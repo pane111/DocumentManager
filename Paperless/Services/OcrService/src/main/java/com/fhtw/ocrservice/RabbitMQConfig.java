@@ -12,6 +12,7 @@ public class RabbitMQConfig {
     public static final String CONFIRM_QUEUE = "confirmQueue";
     public static final String GEMINI_QUEUE = "geminiQueue";
     public static final String GEMINI_CONFIRM = "geminiConfirm";
+    public static final String INDEX_QUEUE = "indexQueue";
 
     @Bean
     public Queue queue() {
@@ -31,6 +32,9 @@ public class RabbitMQConfig {
     public TopicExchange exchange() {
         return new TopicExchange(EXCHANGE);
     }
+
+    @Bean
+    public Queue indexQueue() { return QueueBuilder.durable(INDEX_QUEUE).build();}
 
     @Bean
     public Binding binding(Queue queue, TopicExchange exchange) {

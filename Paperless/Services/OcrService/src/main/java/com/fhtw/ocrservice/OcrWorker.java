@@ -8,6 +8,8 @@ import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import net.sourceforge.tess4j.Tesseract;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -32,7 +34,6 @@ public class OcrWorker {
         log.info("OCR Worker received: " +msg +  " thread: " + Thread.currentThread().getName());
         ObjectMapper mapper = new ObjectMapper();
         MessageContainer messageContainer = mapper.readValue(msg, MessageContainer.class);
-        //Process the received data, eg by generating summary
         MinioClient client = MinioClient.builder()
                 .endpoint(System.getenv("MINIO_ENDPOINT"))
                 .credentials(System.getenv("MINIO_ACCESS_KEY"), System.getenv("MINIO_SECRET_KEY"))
@@ -57,6 +58,8 @@ public class OcrWorker {
             String result = tesseract.doOCR(tempFile);
             log.info("Tesseract result: " + result);
             log.info("Sending document content to Gemini Worker...");
+
+
             MessageContainer mc = new MessageContainer(messageContainer.getFilepath(), result);
             mc.setId(messageContainer.getId());
 

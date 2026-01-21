@@ -35,20 +35,25 @@ public class GeminiWorker {
         log.info("Creating request...");
 
         String prompt = """
-                Summarize the following document in one paragraph. Respond only with the summary text and nothing else.
+                Summarize the following document in one paragraph. Respond only with the summary text and nothing else. Use at most 1000 characters.
                 
                 """+ocrText;
 
         String response = geminiResponse(mc.getFilepath(),prompt);
+        //String response = "THIS IS ONLY A TEST. TEST KEYWORD: Umbrella";
         if (response == null)
         {
             log.warning("Response from Gemini was NULL!");
+            MessageContainer finalResponse = new MessageContainer(mc.getFilepath(),"Gemini failed to generate a summary.");
+            finalResponse.setId(mc.getId());
+            rabbitTemplate.convertAndSend(RabbitMQConfig.INDEX_QUEUE, new ObjectMapper().writeValueAsString(finalResponse));
             return;
         }
         log.info("Worker received final string:" + response);
         MessageContainer finalResponse = new MessageContainer(mc.getFilepath(),response);
         finalResponse.setId(mc.getId());
-        rabbitTemplate.convertAndSend(RabbitMQConfig.CONFIRM_QUEUE, new ObjectMapper().writeValueAsString(finalResponse));
+        String msg = mapper.writeValueAsString(finalResponse);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.INDEX_QUEUE, msg);
     }
 
     private String geminiResponse(String path,String prompt) throws Exception {
@@ -66,7 +71,7 @@ public class GeminiWorker {
         log.info("Calling gemini: " + jsonBody);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"))
+                .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
                 .header("Content-Type","application/json")
                 .header("X-goog-api-key",apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
@@ -92,8 +97,8 @@ public class GeminiWorker {
         }
         catch (Exception e) {
             e.printStackTrace();
+            return "Gemini failed to generate a summary. Reason: " + e.getMessage();
         }
-        return null;
     }
 
 }
