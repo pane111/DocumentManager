@@ -19,8 +19,8 @@ public class CommentService {
         return commentRepo.findByDocId(docId);
     }
 
-    public Comment createComment(Comment comment) {
-        return commentRepo.save(comment);
+    public void createComment(Comment comment) {
+        commentRepo.save(comment);
     }
 
     public List<Comment> findAll() {

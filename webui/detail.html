@@ -19,6 +19,23 @@
 </div>
     <br>
     <div id="comment_section">
+        <h3>Add a comment</h3>
+        <div>
+            <label>
+                Author:
+                <input type="text" id="author" required />
+            </label>
+
+            <label>
+                Comment:
+                <textarea id="comment_content" required></textarea>
+            </label>
+
+            <button id="addcomment">Add Comment</button>
+            <br>
+            <div id="commentstatus"></div>
+        </form>
+
         <h3>Comments</h3>
         <div class="listcont">
             <ul id="comlist">PLACEHOLDER TEXT</ul>
@@ -52,9 +69,30 @@
             document.getElementById('comlist').innerHTML = "Nothing posted yet."
 
             loadComments(id);
+            document.getElementById('addcomment').addEventListener('click', () => sendComment(id));
 
         } catch (e) {
             document.getElementById('doc_title').textContent = `Error: ${e}`;
+        }
+    }
+
+    async function sendComment(id)
+    {
+        try {
+            const data = new FormData();
+            data.append("doc_id",id);
+            data.append("author",document.getElementById('author').value);
+            data.append("content",document.getElementById('comment_content').value)
+
+            const r = await fetch('api/comments', {
+                method: 'POST',
+                body: data
+            });
+            document.getElementById('commentstatus').textContent=await r.text();
+            loadComments(id);
+        }
+        catch (e) {
+            document.getElementById('commentstatus').textContent='There was an error posting your comment.';
         }
     }
 
@@ -71,8 +109,13 @@
             ul.innerHTML = '';
             (Array.isArray(data) ? data : []).forEach(item => {
                 const li = document.createElement('li');
-                li.textContent = `${item.author} posted:\n${item.content}`;
-
+                var li_header = document.createElement('h4');
+                li_header.textContent=`${item.author} wrote:`;
+                var li_content = document.createElement('div');
+                li_content.textContent=item.content;
+                li.classList.add('com-list');
+                li.appendChild(li_header);
+                li.appendChild(li_content);
                 ul.appendChild(li);
             });
         }

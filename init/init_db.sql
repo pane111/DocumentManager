@@ -14,8 +14,7 @@ CREATE TABLE IF NOT EXISTS dm_schema.comments (
                                 content TEXT
 );
 
-INSERT INTO dm_schema.comments VALUES (1,1,'max_mustermann','I really like this document');
-INSERT INTO dm_schema.comments VALUES (2,1,'jane_doe11','This is very interesting.');
+INSERT INTO dm_schema.comments VALUES (0,1,'max_mustermann','I really like this document');
 GRANT CONNECT ON DATABASE dm_db TO dm_user;
 GRANT USAGE ON SCHEMA dm_schema TO dm_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA dm_schema TO dm_user;

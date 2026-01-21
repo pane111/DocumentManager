@@ -1,5 +1,6 @@
 package com.fhtw.rest.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fhtw.rest.model.Comment;
 import com.fhtw.rest.service.CommentService;
 import lombok.extern.java.Log;
@@ -38,9 +39,13 @@ public class CommentController {
         return service.getCommentsByDocId(id);
     }
     @PostMapping
-    public ResponseEntity<String> createComment(@RequestBody Comment comment)
+    public ResponseEntity<?> createComment(@RequestParam Long doc_id, @RequestParam String author, @RequestParam String content)
     {
         log.info("Creating a new comment.");
+        Comment comment = new Comment();
+        comment.setDocId(doc_id);
+        comment.setAuthor(author);
+        comment.setContent(content);
         service.createComment(comment);
         return new ResponseEntity<>("Comment posted", HttpStatus.CREATED);
     }

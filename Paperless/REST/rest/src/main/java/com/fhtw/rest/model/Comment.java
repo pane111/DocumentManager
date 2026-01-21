@@ -8,7 +8,8 @@ import lombok.Data;
 @Data
 public class Comment {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long docId;
