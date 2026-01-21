@@ -6,7 +6,9 @@ import com.fhtw.rest.dto.DocumentDto;
 import com.fhtw.rest.dto.MessageContainer;
 import com.fhtw.rest.mapper.DocumentMapper;
 import com.fhtw.rest.model.Document;
+import com.fhtw.rest.model.IndexedDocument;
 import com.fhtw.rest.repository.DocumentRepo;
+import com.fhtw.rest.repository.SearchRepo;
 import io.minio.*;
 import lombok.extern.java.Log;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,29 +27,20 @@ import java.util.Objects;
 @Log
 public class DocumentService {
     private final DocumentRepo repo;
+    private final SearchRepo searchRepo;
 
     private final RabbitTemplate rabbitTemplate;
 
-    public DocumentService(DocumentRepo repo, RabbitTemplate rabbitTemplate) {
+    public DocumentService(DocumentRepo repo, RabbitTemplate rabbitTemplate, SearchRepo searchRepo) {
         this.repo = repo;
         this.rabbitTemplate = rabbitTemplate;
+        this.searchRepo = searchRepo;
     }
 
     public DocumentDto create(DocumentDto dto) {
         Document d = DocumentMapper.dtoToDoc(dto);
         Document saved = repo.save(d);
 
-        /*
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String json = mapper.writeValueAsString(saved);
-            //rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, json);
-            log.info("Sent document to RabbitMQ");
-        }
-        catch (Exception e) {
-            log.warning(e.getMessage());
-        }
-        */
         return DocumentMapper.docToDto(saved);
     }
 
@@ -92,6 +86,20 @@ public class DocumentService {
         return dtos;
     }
 
+    public List<DocumentDto> findByQuery(String query) {
+        List<IndexedDocument> docs = searchRepo.findByContent(query);
+        log.info("Found " + docs.size() + " documents");
+        List<DocumentDto> dtos = new ArrayList<>();
+        for (IndexedDocument doc : docs) {
+            DocumentDto d = new DocumentDto();
+            d.setId(doc.getId());
+            d.setContent(doc.getContent());
+            d.setTitle(doc.getTitle());
+            d.setStatus("Processed");
+            dtos.add(d);
+        }
+        return dtos;
+    }
 
     public DocumentDto findById(Long id) {
         return repo.findById(id).map(DocumentMapper::docToDto).orElse(null);
@@ -123,6 +131,12 @@ public class DocumentService {
             doc.setPath(path);
             doc.setContent(summary);
             repo.save(doc);
+            IndexedDocument idoc = new IndexedDocument();
+            idoc.setId(doc.getId());
+            idoc.setContent(doc.getContent());
+            idoc.setTitle(doc.getTitle());
+            searchRepo.save(idoc);
+            log.info("Indexed document");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -133,4 +147,6 @@ public class DocumentService {
     public void delete(Long id) {
         repo.deleteById(id);
     }
+
+
 }

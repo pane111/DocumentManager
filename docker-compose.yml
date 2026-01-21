@@ -50,10 +50,31 @@ services:
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     depends_on:
-      - postgres
-      - rabbitmq
-      - minio
+      elasticsearch:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      minio:
+        condition: service_started
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    container_name: dm_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/" ]
+      interval: 10s
+      retries: 10
+
   ocr:
     build: ./Paperless/Services/OcrService
     container_name: dm_ocr
@@ -68,7 +89,7 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
 
-      GEMINI_API_KEY: AIzaSyATXn10MVVA81PkLZR95GMcauAzMpSO7Tk
+      GEMINI_API_KEY: AIzaSyDIh5plZCB8uCeaywN5y-4WElk63QzNw_w
 
     depends_on:
     - rabbitmq

@@ -1,6 +1,7 @@
 package com.fhtw.rest.controller;
 
 import com.fhtw.rest.dto.DocumentDto;
+import com.fhtw.rest.model.IndexedDocument;
 import com.fhtw.rest.service.DocumentService;
 import io.minio.MinioClient;
 import io.minio.UploadObjectArgs;
@@ -41,12 +42,6 @@ public class DocumentController {
         return ResponseEntity.ok(dto);
     }
 
-    /*
-    @PostMapping
-    public ResponseEntity<DocumentDto> create(@RequestBody DocumentDto dto) {
-        return ResponseEntity.ok(service.create(dto));
-    }
-    */
     @PostMapping
     public ResponseEntity<String> uploadPdf(@RequestParam("title") String title, @RequestParam("file") MultipartFile file) throws Exception {
         if (!file.getOriginalFilename().endsWith(".pdf")) {
@@ -70,4 +65,12 @@ public class DocumentController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public List<DocumentDto> getDocumentsByQuery(@RequestParam("query") String query) {
+        logger.info("Request to get all documents by query: " + query);
+        return service.findByQuery(query);
+
+    }
+
 }
