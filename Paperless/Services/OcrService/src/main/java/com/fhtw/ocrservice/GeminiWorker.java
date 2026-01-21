@@ -39,7 +39,6 @@ public class GeminiWorker {
                 
                 """+ocrText;
 
-        
         String response = geminiResponse(mc.getFilepath(),prompt);
         //String response = "THIS IS ONLY A TEST. TEST KEYWORD: Umbrella";
         if (response == null)
