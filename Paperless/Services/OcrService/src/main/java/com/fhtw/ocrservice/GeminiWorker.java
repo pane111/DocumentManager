@@ -39,8 +39,8 @@ public class GeminiWorker {
                 
                 """+ocrText;
 
-        //String response = geminiResponse(mc.getFilepath(),prompt);
-        String response = "THIS IS ONLY A TEST. TEST KEYWORD: Umbrella";
+        String response = geminiResponse(mc.getFilepath(),prompt);
+        //String response = "THIS IS ONLY A TEST. TEST KEYWORD: Umbrella";
         if (response == null)
         {
             log.warning("Response from Gemini was NULL!");
@@ -97,8 +97,8 @@ public class GeminiWorker {
         }
         catch (Exception e) {
             e.printStackTrace();
+            return "Gemini failed to generate a summary. Reason: " + e.getMessage();
         }
-        return null;
     }
 
 }
