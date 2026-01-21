@@ -7,15 +7,14 @@ CREATE TABLE IF NOT EXISTS dm_schema.documents (
                                 path TEXT,
                                 status TEXT
 );
-/*
-INSERT INTO dm_schema.documents (title, content, status) VALUES
-('Project Proposal', 'This document outlines the proposal for the new project, including objectives, scope, and timeline.','processed'),
-('Meeting Notes', 'Notes from the weekly team meeting, covering key discussion points and action items.','processed'),
-('Research Paper', 'A research paper discussing recent developments in AI and machine learning technologies.','processed');
-*/
+CREATE TABLE IF NOT EXISTS dm_schema.comments (
+                                id BIGSERIAL PRIMARY KEY,
+                                doc_id BIGSERIAL,
+                                author TEXT,
+                                content TEXT
+);
 
-
-
+INSERT INTO dm_schema.comments VALUES (0,1,'max_mustermann','I really like this document');
 GRANT CONNECT ON DATABASE dm_db TO dm_user;
 GRANT USAGE ON SCHEMA dm_schema TO dm_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA dm_schema TO dm_user;
