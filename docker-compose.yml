@@ -89,7 +89,7 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
 
-      GEMINI_API_KEY: AIzaSyAk3erZbsy2YLQE3h467KScYZ6JIPk8pVM
+      GEMINI_API_KEY: AIzaSyAbXVui1QHJl571XTuGAiK5v2H8mg6ba9s
 
     depends_on:
     - rabbitmq
